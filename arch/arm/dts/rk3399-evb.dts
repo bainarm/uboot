@@ -250,25 +250,29 @@
 	i2c-scl-falling-time-ns = <50>;
 	i2c-scl-rising-time-ns = <100>;
 
-	rk808: pmic@1b {
-		compatible = "rockchip,rk808";
-		clock-output-names = "xin32k", "wifibt_32kin";
-		interrupt-parent = <&gpio0>;
-		interrupts = <4 IRQ_TYPE_LEVEL_LOW>;
+	rk818: pmic@1c {
+		compatible = "rockchip,rk818";
+		reg = <0x1c>;
+		interrupt-parent = <&gpio1>;
+		interrupts = <16 IRQ_TYPE_LEVEL_LOW>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&pmic_int_l>;
-		reg = <0x1b>;
 		rockchip,system-power-controller;
 		#clock-cells = <1>;
 		status = "okay";
 
-		vcc12-supply = <&vcc3v3_sys>;
 
 		regulators {
-			vcc33_lcd: SWITCH_REG2 {
+			vdd_arm: DCDC_REG1 {
+				regulator-name = "vdd_cpu_l";
 				regulator-always-on;
 				regulator-boot-on;
-				regulator-name = "vcc33_lcd";
+				regulator-min-microvolt = <750000>;
+				regulator-max-microvolt = <1350000>;
+				regulator-ramp-delay = <6001>;
+				regulator-state-mem {
+					regulator-off-in-suspend;
+				};
 			};
 		};
 	};
@@ -333,7 +337,7 @@
 };
 
 &route_edp {
-	status = "okay";
+	status = "disabled";
 };
 
 &edp_in_vopl {
@@ -341,11 +345,11 @@
 };
 
 &edp_in_vopb {
-	status = "okay";
+	status = "disabled";
 };
 
 &edp {
-	status = "okay";
+	status = "disabled";
 	force-hpd;
 
 	ports {

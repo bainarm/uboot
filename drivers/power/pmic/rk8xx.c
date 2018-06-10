@@ -157,7 +157,7 @@ static int rk8xx_probe(struct udevice *dev)
 	struct reg_data *init_data = NULL;
 	int init_data_num = 0;
 	int ret = 0, i, show_variant;
-	uint8_t msb, lsb, id_msb, id_lsb;
+	uint8_t msb, lsb, id_msb, id_lsb, val;
 
 	/* read Chip variant */
 	if (device_is_compatible(dev, "rockchip,rk817") ||
@@ -175,6 +175,11 @@ static int rk8xx_probe(struct udevice *dev)
 	ret = rk8xx_read(dev, id_lsb, &lsb, 1);
 	if (ret)
 		return ret;
+
+	rk8xx_read(dev, 0xa1, &val, 1);
+	val &= ~(0xf);
+	val |= 0x7;
+	rk8xx_write(dev, 0xa1, &val, 1);
 
 	priv->variant = ((msb << 8) | lsb) & RK8XX_ID_MSK;
 	show_variant = priv->variant;
