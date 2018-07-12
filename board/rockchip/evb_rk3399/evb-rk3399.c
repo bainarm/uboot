@@ -12,6 +12,9 @@
 #include <dm/uclass-internal.h>
 #include <asm/setup.h>
 #include <asm/arch/periph.h>
+#include <asm/arch/hardware.h>
+#include <asm/io.h>
+#include <asm/arch/grf_rk3399.h>
 #include <power/regulator.h>
 #include <u-boot/sha256.h>
 #include <usb.h>
@@ -27,7 +30,15 @@ int rk_board_init(void)
 {
 	struct udevice *pinctrl, *regulator;
 	int ret;
+#define PMUGRF_BASE	0xff320000
+	struct rk3399_pmugrf_regs * const pmugrf = (void *)PMUGRF_BASE;
 
+	/*
+	 * pmu GPIO1 1.8v/3.0v control source select PMUGRF.SOC_CON0.pmu1830_vo,
+	 * and set the pmu1830_vol to 3.0v.
+	 */
+	rk_setreg(&pmugrf->soc_con0, (1 << 8));
+	rk_clrreg(&pmugrf->soc_con0, (1 << 9));
 	/*
 	 * The PWM does not have decicated interrupt number in dts and can
 	 * not get periph_id by pinctrl framework, so let's init them here.
