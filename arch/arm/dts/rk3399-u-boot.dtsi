@@ -11,7 +11,7 @@
 	};
 };
 
-&uart2 {
+&uart0 {
 	clock-frequency = <24000000>;
 	u-boot,dm-pre-reloc;
 	status = "okay";
